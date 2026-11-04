@@ -1,0 +1,16 @@
+# Python
+venv/
+__pycache__/
+*.pyc
+
+# dbt
+dbt_transform/target/
+dbt_transform/logs/
+dbt_transform/dbt_packages/
+
+# DuckDB (géré par DVC)
+*.duckdb
+*.duckdb.wal
+
+# Prefect
+.prefect/
