@@ -1,0 +1,17 @@
+version: 2
+
+sources:
+  - name: raw_data
+    schema: raw_data
+    tables:
+      - name: stations_gbfs
+        # loaded_at_field: _dlt_load_time  # ou la colonne de mise à jour/timestamp de ta table
+        freshness:
+          warn_after: {count: 12, period: hour}
+          error_after: {count: 24, period: hour}
+
+      - name: meteo_open_meteo
+        # loaded_at_field: _dlt_load_time
+        freshness:
+          warn_after: {count: 6, period: hour}
+          error_after: {count: 12, period: hour}

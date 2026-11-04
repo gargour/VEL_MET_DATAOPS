@@ -1,0 +1,17 @@
+version: 2
+
+models:
+  - name: stg_meteo
+    description: "Données météo nettoyées depuis Open-Meteo"
+    columns:
+      - name: time
+        tests:
+          - not_null
+
+  - name: stg_stations
+    description: "Données des stations de vélos nettoyées (GBFS)"
+    columns:
+      - name: station_id
+        tests:
+          - not_null
+          # On retire le test 'unique' ici si la table contient des statuts d'historique (plusieurs lignes par station)

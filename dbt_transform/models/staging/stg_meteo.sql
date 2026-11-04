@@ -1,0 +1,1 @@
+select * from {{ source('raw_data', 'meteo_open_meteo') }}

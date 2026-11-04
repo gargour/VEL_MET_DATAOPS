@@ -1,0 +1,20 @@
+version: 2
+
+models:
+  - name: dim_stations
+    description: "Dimension des stations de vélos"
+    columns:
+      - name: station_id
+        tests:
+          - not_null
+          - unique
+
+  - name: fct_stations_status
+    description: "Table de faits des statuts des stations et météo"
+    columns:
+      - name: station_id
+        tests:
+          - not_null
+          - relationships:
+              to: ref('dim_stations')
+              field: station_id
