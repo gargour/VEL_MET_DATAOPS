@@ -1,0 +1,6 @@
+velos_meteo_dbt:
+  outputs:
+    dev:
+      type: duckdb
+      path: /app/velos_meteo_pipeline.duckdb
+  target: dev

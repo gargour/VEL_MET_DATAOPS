@@ -1,0 +1,12 @@
+services:
+  dataops-pipeline:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: vel_met_dataops
+    environment:
+      - PREFECT_HOME=/tmp/prefect
+      - PREFECT_TELEMETRY_ENABLED=false
+    volumes:
+      - .:/app
+    command: python orchestration/flows.py
