@@ -1,53 +1,73 @@
-# 🚲⚡ Velos & Meteo DataOps Pipeline
+# 🚲 DataOps Pipeline : Vélos & Météo (DLT + DuckDB + dbt + Docker)
 
-[![DataOps CI - DBT Build & Test](https://github.com/ton-username/velos-meteo-dataops/actions/workflows/ci.yml/badge.svg)](https://github.com/ton-username/velos-meteo-dataops/actions)
-[![Python 3.11](https://img.shields.io/badge/python-3.11-blue.svg)](https://www.python.org/downloads/)
-[![dbt](https://img.shields.io/badge/dbt-1.12.6-orange.svg)](https://www.getdbt.com/)
-[![Prefect](https://img.shields.io/badge/Prefect-v3-green.svg)](https://www.prefect.io/)
-[![DuckDB](https://img.shields.io/badge/DuckDB-embedded-yellow.svg)](https://duckdb.org/)
-
-A production-grade, end-to-end DataOps pipeline designed to ingest, transform, test, and orchestrate real-time bicycle sharing data (GBFS) and weather telemetry (Open-Meteo).
+Pipeline DataOps end-to-end automatisé pour l'ingestion, la transformation et le test de données en temps réel combinant les flux des stations de vélos en libre-service (GBFS) et les prévisions météorologiques (Open-Meteo).
 
 ---
 
-## 🏗️ Architecture & Tech Stack
+## 🛠️ Stack Technique
 
-[ Open-Meteo API & GBFS API ]
-│
-▼ (Ingestion)
-[ dlt ] ──► [ DuckDB (Local Storage) ] ──► [ DVC (Versioning) ]
-│
-▼ (Transformation & Data Quality)
-[ dbt ] (Staging -> Marts + Tests)
-│
-▼ (Orchestration)
-[ Prefect 3 ]
-- **Ingestion**: `dlt` (Data Load Tool) for robust schema evolution and pipeline loading.
-- **Storage**: `DuckDB` as a high-performance embedded analytical data warehouse.
-- **Transformation & Quality**: `dbt` (Data Build Tool) with automated unit testing (`not_null`, `unique`, `relationships`).
-- **Orchestration**: `Prefect 3` for automated workflow management, retries, and monitoring.
-- **Data Versioning**: `DVC` (Data Version Control) to track DuckDB state.
-- **CI/CD**: `GitHub Actions` for automated integration testing on every push.
+* **Ingestion :** `dlt` (Data Load Tool) en Python
+* **Stockage :** `DuckDB` (Embedded columnar database)
+* **Transformation & Tests :** `dbt` (Data Build Tool) avec l'adaptateur DuckDB
+* **Orchestration :** Script Python séquentiel personnalisé (`orchestration/flows.py`)
+* **Conteneurisation :** `Docker` & `Docker Compose`
 
 ---
 
-## 📁 Project Structure
+## 📂 Structure du Projet
 
 ```text
-PROJET/
-│
-├── .github/
-│   └── workflows/
-│       └── ci.yml             # GitHub Actions CI workflow
-├── .dvc/                      # DVC configuration
-├── dbt_transform/             # dbt project directory
+.
+├── dlt_pipeline/
+│   └── ingestion.py        # Script d'ingestion des sources (GBFS & Open-Meteo) via dlt
+├── dbt_transform/
 │   ├── models/
-│   │   ├── marts/             # Dimensional models (dim_stations, fct_stations_status)
-│   │   ├── staging/           # Staging views (stg_meteo, stg_stations)
-│   │   └── sources.yml        # Raw sources definition
-│   └── dbt_project.yml
+│   │   ├── staging/        # Vues de staging (stg_meteo, stg_stations)
+│   │   └── marts/          # Modèles dimensionnels (dim_stations, fct_stations_status)
+│   ├── profiles.yml        # Configuration de la connexion DuckDB pour dbt
+│   └── dbt_project.yml     # Configuration du projet dbt
 ├── orchestration/
-│   └── flows.py               # Prefect end-to-end dataops flow
-├── venv/                      # Python virtual environment
-├── velos_meteo_pipeline.duckdb # Embedded analytical database
-└── README.md
+│   └── flows.py            # Script d'orchestration orchestrant dlt puis dbt
+├── Dockerfile              # Configuration de l'environnement conteneurisé
+├── docker-compose.yml      # Orchestration du conteneur Docker
+├── requirements.txt        # Dépendances Python du projet
+└── README.md               # Documentation du projet
+⚙️ Prérequis
+Assure-toi d'avoir installé sur ta machine :
+
+Docker Desktop en cours d'exécution.
+
+Git (pour le versioning).
+
+🚀 Instructions d'Installation et d'Exécution
+1. Cloner le dépôt et se placer dans le dossier
+PowerShell
+git clone <URL_DE_TON_REPO_GITHUB>
+cd <NOM_DU_PROJET>
+2. Lancer le pipeline complet via Docker
+Le conteneur va automatiquement installer les dépendances, exécuter l'ingestion dlt, lancer les transformations dbt et exécuter tous les tests de qualité de données.
+
+PowerShell
+docker-compose up --build
+3. Vérification du succès
+Le pipeline est considéré comme validé lorsque le terminal affiche le résumé final de dbt avec un statut sans erreur :
+
+Tests exécutés : 10/10 PASS
+
+Code de sortie : 0
+
+Plaintext
+Completed successfully
+Done. PASS=10 WARN=0 ERROR=0 SKIP=0
+📊 Modélisation des Données (dbt)
+Le projet suit les bonnes pratiques de modélisation en couches :
+
+Raw (Brut) : Ingestion directe des données brutes par dlt dans le schéma raw_data de DuckDB.
+
+Staging (main_staging) : Nettoyage, typage et standardisation des champs (stg_meteo, stg_stations).
+
+Marts (main_marts) : Modélisation dimensionnelle orientée analytique :
+
+dim_stations : Dimension des stations de vélos (ID, nom, coordonnées).
+
+fct_stations_status : Table de faits enregistrant l'état des vélos et des docks disponibles corrélé aux données météo
