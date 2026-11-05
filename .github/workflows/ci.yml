@@ -25,5 +25,4 @@ jobs:
           pip install dbt-duckdb prefect dlt
 
       - name: Run dbt test and build
-        run: |
-          dbt build --project-dir dbt_transform
+        run: dbt build --project-dir dbt_transform --profiles-dir dbt_transform
