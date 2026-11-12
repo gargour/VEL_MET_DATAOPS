@@ -9,23 +9,16 @@ on:
 jobs:
   dbt-ci:
     runs-on: ubuntu-latest
+    env:
+      DUCKDB_PATH: ${{ github.workspace }}/velos_meteo_pipeline.duckdb
 
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-
-      - name: Set up Python
-        uses: actions/setup-python@v5
-        with:
-          python-version: '3.11'
-
-      - name: Install dependencies
-        run: |
-          python -m pip install --upgrade pip
-          pip install dbt-duckdb prefect dlt
+      # ... inchangé jusqu'à l'ingestion
 
       - name: Run DLT Ingestion to generate database
-        run: python dlt_pipeline/ingestion.py
+        run: |
+          python dlt_pipeline/ingestion.py
+          ls -la ${{ github.workspace }}/*.duckdb
 
       - name: Run dbt test and build
         run: dbt build --project-dir dbt_transform --profiles-dir dbt_transform

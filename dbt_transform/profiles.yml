@@ -1,6 +1,9 @@
+config:
+  send_anonymous_usage_stats: false
+
 velos_meteo_dbt:
+  target: dev
   outputs:
     dev:
       type: duckdb
-      path: /app/velos_meteo_pipeline.duckdb
-  target: dev
+      path: "{{ env_var('DUCKDB_PATH', '../velos_meteo_pipeline.duckdb') }}"

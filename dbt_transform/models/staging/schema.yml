@@ -15,3 +15,9 @@ models:
         tests:
           - not_null
           # On retire le test 'unique' ici si la table contient des statuts d'historique (plusieurs lignes par station)
+  - name: fct_meteo
+    description: "Table de faits des observations météorologiques"
+    columns:
+      - name: observation_time
+        tests:
+          - not_null
